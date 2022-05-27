@@ -19,18 +19,18 @@ import java.util.LinkedList;
 public class MathProblem {
 
     //Variables
-    static boolean isDone = false;
-    static int i = 1;
-    public static int maxPlace = 0;
+    static boolean isDone = false; //False if the problem hasn't been solved
+    static int start = 1; //First Value to be tried
+    public static int maxPlace = 0; //Last Value to be tried
     public static ArrayList<Integer> triedNum = new ArrayList<>();
     public static LinkedList<Integer> triedNumTemp = new LinkedList<>();
     static MathProblem mathProblem = new MathProblem();
 
     public static void main(String[] args) {
-        //Retreving data for 'i' and "maxPlace" from file
+        //Retreving data for "start" and "maxPlace" from file
         System.out.println("Currently Retrieving Data...");
         try {
-            i = Integer.parseInt(FileManager.readFile("MaxPlaceSize.txt"));
+            start = Integer.parseInt(FileManager.readFile("MaxPlaceSize.txt"));
             maxPlace = Integer.parseInt(FileManager.readFile("MaxPlaceSize.txt")) + 50000;
             System.out.println("Success.");
         } catch (FileNotFoundException e) {
@@ -44,19 +44,19 @@ public class MathProblem {
 
         //Main Loop
         while (!isDone) {
-            System.out.println(i - 1 + " did not work.\n"); //System.out.println("Currently attempting " + i);
-            calcEquation.setB(i);
-            calcEquation.calcPattern(triedNum, i, mathProblem);
+            System.out.println(start - 1 + " did not work.\n"); //System.out.println("Currently attempting " + i);
+            calcEquation.setB(start);
+            calcEquation.calcPattern(triedNum, start, mathProblem);
             isDone = calcEquation.isDone;
 
             //Compile more of the array while running
-            if (i > maxPlace) {
+            if (start > maxPlace) {
                 CompileManager.writeWhileRun(false);
             }
-            i++;
+            start++;
         }
         //If loop was exited
-        System.out.println(i - 1 + "worked!");
+        System.out.println(start - 1 + "worked!");
     }
 
 }
