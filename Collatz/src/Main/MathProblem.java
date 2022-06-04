@@ -22,12 +22,12 @@ public class MathProblem {
     static boolean isDone = false; //False if the problem hasn't been solved
     static int start = 1; //First Value to be tried
     public static int maxPlace = 0; //Last Value to be tried
-    public static ArrayList<Integer> triedNum = new ArrayList<>();
-    public static LinkedList<Integer> triedNumTemp = new LinkedList<>();
+    public static ArrayList<Integer> triedNum = new ArrayList<>(); //The list of numbers already tried
+    public static LinkedList<Integer> newTriedNum = new LinkedList<>(); //The list of new numbers that have been tried so they can be put into the database
     static MathProblem mathProblem = new MathProblem();
 
     public static void main(String[] args) {
-        //Retreving data for "start" and "maxPlace" from file
+        //Retreving data for "start" and "maxPlace" from file(MaxPlaceSize.txt)
         System.out.println("Currently Retrieving Data...");
         try {
             start = Integer.parseInt(FileManager.readFile("MaxPlaceSize.txt"));
@@ -45,8 +45,8 @@ public class MathProblem {
         //Main Loop
         while (!isDone) {
             System.out.println(start - 1 + " did not work.\n"); //System.out.println("Currently attempting " + i);
-            calcEquation.setB(start);
-            calcEquation.calcPattern(triedNum, start, mathProblem);
+            calcEquation.setElmToTest(start);
+            calcEquation.calcPattern(triedNum, start, this);
             isDone = calcEquation.isDone;
 
             //Compile more of the array while running
@@ -56,7 +56,7 @@ public class MathProblem {
             start++;
         }
         //If loop was exited
-        System.out.println(start - 1 + "worked!");
+        System.out.println(start - 1 + " worked!");
     }
 
 }
@@ -70,21 +70,21 @@ class CompileManager {
     //qCompile if true compiles the array and if false updates "MaxPlaceSize.txt" to the current value
     public static void writeWhileRun(boolean qCompile) {
         System.out.println("Currently Coping Array...");
-        FileManager.appendFile("TestFile.txt", mathProblem.triedNumTemp);
+        FileManager.appendFile("TestFile.txt", MathProblem.newTriedNum);
         System.out.println("Done.");
-        mathProblem.triedNumTemp.clear();
+        MathProblem.newTriedNum.clear();
         if (qCompile) compileArray();
         if (!qCompile) {
-            FileManager.writeFile("MaxPlaceSize.txt", Integer.toString(mathProblem.maxPlace));
-            mathProblem.maxPlace += 50000;
+            FileManager.writeFile("MaxPlaceSize.txt", Integer.toString(MathProblem.maxPlace));
+            MathProblem.maxPlace += 50000;
         }
     }
 
     //Writes the array as a delegate
     public static void compileArray() {
         System.out.println("Currently compling array...");
-        FileManager.setFile("TestFile.txt");
-        mathProblem.triedNum = FileManager.writeIntArray(mathProblem.triedNum);
+        FileManager.setFile("TestFile.txt"); //Setting the file in the File Manager Class
+        MathProblem.triedNum = FileManager.writeIntArray(MathProblem.triedNum);
         System.out.println("Done.");
     }
 }
@@ -93,52 +93,41 @@ class CompileManager {
 //The Program that carries out all the calculation for the conjunture
 class calcEquation {
     static boolean isDone = false;
-    static int b;
+    static int elmToTest;
 
-    //Sets static variable 'b' to given value
-    public static void setB(int ba) {
-        b = ba;
+    //Sets static variable 'elmToTest' to given value
+    public static void setElmToTest(int elmToTest) {
+        this.elmToTest = elmToTest;
     }
 
 
     //Main method
-    public static boolean calcPattern(ArrayList<Integer> triedNums, int i, MathProblem mathProblem) {
-        int j = i;
+    public static boolean calcPattern(ArrayList<Integer> triedNums, int testingNumber, MathProblem mathProblem) {
+        int testingNumberTemp = testingNumber;
 
         //Checks to see if the number is already in the system
-        for (int a = mathProblem.triedNum.size() - 1; a >= 0; a--) {
-            if (j == mathProblem.triedNum.get(a)) {
-                isDone = false;
-                if (mathProblem.triedNum.contains(b)) {
-                } else {
-                    mathProblem.triedNum.add(b);
-                    mathProblem.triedNumTemp.add(b);
-                }
+        for (int size = mathProblem.triedNum.size() - 1; size > 0; size--) {
+            if (testingNumber == mathProblem.triedNum.get(size)) {
+                if (!(mathProblem.triedNum.contains(elmToTest))) mathProblem.newTriedNum.add(elmToTest);
                 return false;
             }
         }
 
-
         //Shorten the array list
         reveiwArray(false, false, mathProblem);
-
         //Re-Checking
-        if (i % 2 == 1) {
-            j = 3 * i + 1;
-            calcEquation.calcPattern(triedNums, j, mathProblem); //Has not failed so trying it again
+        if (testingNumber % 2 == 1) {
+            testingNumberTemp = (3 * testingNumber) + 1;
+            calcEquation.calcPattern(triedNums, testingNumberTemp, mathProblem); //Has not failed so trying it again
         } else {
-            j /= 2;
-            calcEquation.calcPattern(triedNums, j, mathProblem); //Has not failed so trying it again
+            testingNumberTemp /= 2;
+            calcEquation.calcPattern(triedNums, testingNumberTemp, mathProblem); //Has not failed so trying it again
         }
 
         //Returning result
         if (!isDone) {
             //Adding failed number to array list
-            if (triedNums.contains(b)) {
-            } else {
-                triedNums.add(b);
-                MathProblem.triedNumTemp.add(b);
-            }
+            if (!(triedNums.contains(elmToTest))) MathProblem.newTriedNum.add(elmToTest);
         }
         return isDone;
     }
@@ -148,37 +137,50 @@ class calcEquation {
     private static void reveiwArray(boolean one, boolean two, MathProblem mathProblem) {
         int begSize = mathProblem.triedNum.size(); //Temporary test of usefullness
 
+        System.out.println("Currently Reveiwing Array...");
+        System.out.println("Attempting Method One");
+        //Method 1:Delete numbers that are even and can be divided by two(continuasly) to equal another number in the array
         if (one) {
-            //Method 1:Delete numbers that are even and can be divided by two(continuasly) to equal another number in the array
-            for (int f = mathProblem.triedNum.size() - 1; f >= 0; f--) {
+            for (int f = mathProblem.triedNum.size() - 1; f > 0; f--) {
                 int place = mathProblem.triedNum.get(f);
                 checkDivTwo(place, mathProblem.triedNum);
             }
         }
 
         //Expieremental
+        System.out.println("Attempting Method Two");
+        //Method 2: Delete numbers that are even and when subtracted by one and divided by three can be found in the array(triedNum)
         if (two) {
             //Method 2: Delete
-            for (int f = mathProblem.triedNum.size() - 1; f >= 0; f--) {
-                int place = mathProblem.triedNum.get(f);
-                if (mathProblem.triedNum.contains(place * 3 + 1)) {
-                    mathProblem.triedNum.remove(mathProblem.triedNum.indexOf(place));
+            for (int index = mathProblem.triedNum.size() - 1; index > 0; index--) {
+                int place = mathProblem.triedNum.get(index);
+                if (place%2 == 0) {
+                    if (mathProblem.triedNum.contains((place-1)/3)) {
+                        mathProblem.triedNum.remove(index);
+                    }
                 }
             }
         }
+
+        System.out.println("Array Reveiw Complete.");
 
         int endSize = mathProblem.triedNum.size(); //Temporary test of usefullness
 
     }
 
-
+    //Helper method for review array method 1
+    //Checks to see if "place" is even
+        //If it is it will see if place/2 is found within triedNum.
+            //If it is found it will delete it and endn the method.
+            //If it isn't found it will recall the method
+        //If it isn't it will return and end the method.
     private static void checkDivTwo(int place, ArrayList<Integer> triedNum) {
         if (place % 2 == 0) {
             int placeDivideByTwo = place / 2;
             if (triedNum.contains(placeDivideByTwo)) {
                 triedNum.remove(triedNum.indexOf(place));
             } else {
-                checkDivTwo(place, triedNum);
+                checkDivTwo(placeDivideByTwo, triedNum);
             }
 
         } else {
@@ -199,27 +201,9 @@ class FileManager {
         triedNumsInfo = new File(fileName);
     }
 
-    //Prepares a LinkedList to be converted into a .txt file
-    public static String arrayClean(LinkedList<Integer> triedNumTemp) {
+    //Prepares a List of type Integer to be converted into a .txt file
+    private static String arrayClean(List<Integer> triedNumTemp) {
         String arrayTemp = triedNumTemp.toString();
-        for (char letter : arrayTemp.toCharArray()) {
-            if (letter == ',') {
-                int index = arrayTemp.indexOf(letter);
-                arrayTemp = arrayTemp.substring(0, index) + "\n" + arrayTemp.substring(index + 2, arrayTemp.length());
-            } else if (letter == '[') {
-                int index = arrayTemp.indexOf(letter);
-                arrayTemp = arrayTemp.substring(0, index) + arrayTemp.substring(index + 1, arrayTemp.length());
-            } else if (letter == ']') {
-                int index = arrayTemp.indexOf(letter);
-                arrayTemp = arrayTemp.substring(0, index);
-            }
-        }
-        return arrayTemp;
-    }
-
-    //Prepares an ArrayList to be converted into a .txt file
-    public static String arrayClean(ArrayList<Integer> triedNum) {
-        String arrayTemp = triedNum.toString();
         for (char letter : arrayTemp.toCharArray()) {
             if (letter == ',') {
                 int index = arrayTemp.indexOf(letter);
@@ -273,8 +257,8 @@ class FileManager {
         return toReturn;
     }
 
-    //Writes an Integer Array List from a File
-    public static ArrayList<Integer> writeIntArray(ArrayList<Integer> triedNums) {
+    //Writes an Integer List from a File
+    public static ArrayList<Integer> writeIntArray(List<Integer> triedNums) {
         try {
             triedNums.clear();
             ArrayList<String> temp = getArrayList(triedNumsInfo);
@@ -289,7 +273,7 @@ class FileManager {
     }
 
     //Returns a String ArrayList from a file
-    public static ArrayList<String> getArrayList(File f) throws FileNotFoundException {
+    private static ArrayList<String> getArrayList(File f) throws FileNotFoundException {
         ArrayList<String> list = new ArrayList<String>();
         Scanner s = new Scanner(f);
 
@@ -308,8 +292,8 @@ class FileManager {
 
     //Compiles an Array into a given file
     public static void compileArrayToFile(ArrayList<Integer> triedNum, String fileName) {
-        String arrayTemp = FileManager.arrayClean(triedNum);
-        FileManager.writeFile(fileName, arrayTemp);
+        String arrayTemp = arrayClean(triedNum);
+        writeFile(fileName, arrayTemp);
     }
 }
 
