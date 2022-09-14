@@ -24,9 +24,9 @@ public class FileTest {
 		}
 
 		/*
-		//FileStuff.compileArrayToFile(triedNums, "TestFile.txt");
+		//FileStuff.compileArrayToFile(triedNums, "AttemptedData.txt");
 		String arrayTemp = FileStuff.arrayClean(triedNums);
-		FileStuff.writeFile("TestFile.txt", arrayTemp);
+		FileStuff.writeFile("AttemptedData.txt", arrayTemp);
 		FileStuff.writeIntArray(triedNums);
 		System.out.println(triedNums);
 

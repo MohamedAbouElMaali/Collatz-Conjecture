@@ -29,11 +29,11 @@ public class MathProblem {
     static MathProblem mathProblem = new MathProblem();
 
     public static void main(String[] args) {
-        //Retreving data for "start" and "maxPlace" from file(MaxPlaceSize.txt)
+        //Retreving data for "start" and "maxPlace" from file(StartingData.txt)
         System.out.println("Currently Retrieving Data...");
         try {
-            start = Integer.parseInt(FileManager.readFile("MaxPlaceSize.txt"));
-            maxPlace = Integer.parseInt(FileManager.readFile("MaxPlaceSize.txt")) + tryIntervals;
+            start = Integer.parseInt(FileManager.readFile("StartingData.txt"));
+            maxPlace = Integer.parseInt(FileManager.readFile("StartingData.txt")) + tryIntervals;
             System.out.println("Success.");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -55,7 +55,7 @@ public class MathProblem {
             if (start > maxPlace) {
                 CompileManager.writeWhileRun(false);
                 calcEquation.reveiwArray(true, false, mathProblem);
-                FileManager.compileArrayToFile(triedNum, "TestFile.txt");
+                FileManager.compileArrayToFile(triedNum, "AttemptedData.txt");
                 System.exit(0);
             }
             start++;
@@ -71,8 +71,8 @@ public class MathProblem {
 class CompileManager {
     static MathProblem mathProblem = new MathProblem();
 
-    //Appends the new array values into "TestFile.txt"
-    //qCompile if true compiles the array and if false updates "MaxPlaceSize.txt" to the current value
+    //Appends the new array values into "AttemptedData.txt"
+    //qCompile if true compiles the array and if false updates "StartingData.txt" to the current value
     public static void writeWhileRun(boolean qCompile) {
         if (qCompile) {
             System.out.println("Currently Coping Array...");
@@ -80,10 +80,10 @@ class CompileManager {
             System.out.println("Done.");
         }
         if (!qCompile) {
-            FileManager.appendFile("TestFile.txt", MathProblem.newTriedNum);
+            FileManager.appendFile("AttemptedData.txt", MathProblem.newTriedNum);
             MathProblem.newTriedNum.clear();
             compileArray();
-            FileManager.writeFile("MaxPlaceSize.txt", Integer.toString(MathProblem.maxPlace));
+            FileManager.writeFile("StartingData.txt", Integer.toString(MathProblem.maxPlace));
             MathProblem.maxPlace += mathProblem.tryIntervals;
         }
     }
@@ -91,7 +91,7 @@ class CompileManager {
     //Writes the array as a delegate
     public static void compileArray() {
         System.out.println("Currently compling array...");
-        FileManager.setFile("TestFile.txt"); //Setting the file in the File Manager Class
+        FileManager.setFile("AttemptedData.txt"); //Setting the file in the File Manager Class
         MathProblem.triedNum = (ArrayList<Integer>) (FileManager.writeIntArray(MathProblem.triedNum));
         System.out.println("Done.");
     }
