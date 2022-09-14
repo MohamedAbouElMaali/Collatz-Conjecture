@@ -59,7 +59,7 @@ class FileManager {
     }
 
     //Returns the contents of a file in the form of a string
-    public String readFile(String fileName) throws FileNotFoundException {
+    public static String readFile(String fileName) throws FileNotFoundException {
         File fileToRead = new File(fileName);
         Scanner s = new Scanner(fileToRead);
         String toReturn = "";

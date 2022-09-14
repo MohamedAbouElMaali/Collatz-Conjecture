@@ -12,7 +12,6 @@ public class Data {
     public static ArrayList<Integer> triedNum = new ArrayList<>(); //The list of numbers already tried
     public static LinkedList<Integer> newTriedNum = new LinkedList<>(); //The list of new numbers that have been tried so they can be put into the database
     public static int tryIntervals = 100; //Amount of numbers to try before saving the data to the file and updating the array triedNum
-    static MathProblem mathProblem = new MathProblem();
     static FileManager fileManager = new FileManager();
     static FileManager.CompileManager compileManager = fileManager.new CompileManager();
 
