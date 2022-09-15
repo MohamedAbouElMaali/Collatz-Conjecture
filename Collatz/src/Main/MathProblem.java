@@ -14,8 +14,8 @@ public class MathProblem {
         //Retreving data for "start" and "maxPlace" from file(StartingData.txt)
         System.out.println("Currently Retrieving Data...");
         try {
-            data.start = Integer.parseInt(FileManager.readFile(data.startingData));
-            data.maxPlace = data.start + data.tryIntervals;
+            Data.start = Integer.parseInt(FileManager.readFile(Data.startingData));
+            Data.maxPlace = Data.start + Data.tryIntervals;
             System.out.println("Success.");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -23,27 +23,27 @@ public class MathProblem {
         }
 
         //Coping Array From File
-        data.compileManager.writeWhileRun(true);
+        Data.compileManager.writeWhileRun(true);
 
 
         //Main Loop
-        while (!data.isDone) {
-            System.out.println(data.start - 1 + " did not work.\n"); //System.out.println("Currently attempting " + i);
-            calcEquation.setElmToTest(data.start);
-            calcEquation.calcPattern(data.triedNum, data.start);
-            data.isDone = calcEquation.isDone;
+        while (!Data.isDone) {
+            System.out.println(Data.start - 1 + " did not work.\n"); //System.out.println("Currently attempting " + i);
+            calcEquation.setElmToTest(Data.start);
+            calcEquation.calcPattern(Data.triedNum, Data.start);
+            Data.isDone = calcEquation.isDone;
 
             //Compile more of the array while running
-            if (data.start > data.maxPlace) {
-                data.compileManager.writeWhileRun(false);
+            if (Data.start > Data.maxPlace) {
+                Data.compileManager.writeWhileRun(false);
                 calcEquation.reveiwArray(false, false);
-                data.fileManager.compileArrayToFile(data.triedNum, data.attemptedData);
+                Data.fileManager.compileArrayToFile(Data.triedNum, Data.attemptedData);
                 System.exit(0);
             }
             Data.start++;
         }
         //If loop was exited
-        System.out.println(data.start - 1 + " worked!");
+        System.out.println(Data.start - 1 + " worked!");
     }
 
 }
